@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AgeGroup extends Model
+class Race extends Model
 {
     use HasFactory;
 
-    public function races()
+    public function ageGroups()
     {
-        return $this->belongsToMany(Race::class, 'race_age_group');
+        return $this->belongsToMany(AgeGroup::class, 'race_age_group');
     }
 }
