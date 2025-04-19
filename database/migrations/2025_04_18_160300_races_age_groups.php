@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('race_age_group', function (Blueprint $table): void {
-            $table->foreignId('race_id')->constrained();
-            $table->foreignId('age_group_id')->constrained();
-        }
-        );
-
+            $table->foreignId('race_id')->constrained()->onDelete('cascade');
+            $table->foreignId('age_group_id')->constrained()->onDelete('cascade');
+            // This will delete the pivot record when either race or age group is deleted
+        });
         //
     }
 

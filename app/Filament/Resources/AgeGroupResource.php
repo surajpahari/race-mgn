@@ -4,10 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AgeGroupResource\Pages;
 use App\Models\AgeGroup;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class AgeGroupResource extends Resource
@@ -21,9 +22,9 @@ class AgeGroupResource extends Resource
         return $form
             ->schema([
                 //
-                Forms\Components\TextInput::make('from')->numeric(),
-                Forms\Components\TextInput::make('to')->numeric(),
-                Forms\Components\TextInput::make('name')->string(),
+                TextInput::make('from')->numeric()->required(),
+                TextInput::make('to')->numeric()->required(),
+                TextInput::make('name')->string()->required(),
             ]);
     }
 
@@ -32,9 +33,9 @@ class AgeGroupResource extends Resource
         return $table
             ->columns([
                 //
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('from'),
-                Tables\Columns\TextColumn::make('to'),
+                TextColumn::make('name'),
+                TextColumn::make('from'),
+                TextColumn::make('to'),
             ])
             ->filters([
                 //

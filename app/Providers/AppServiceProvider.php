@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Model::unguard();
+        Filament::registerNavigationGroups([
+            'Participant',
+            'Age Groups',
+            'Races',
+        ]);
     }
 }

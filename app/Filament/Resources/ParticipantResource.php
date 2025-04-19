@@ -5,13 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Imports\ParticipantImporter;
 use App\Filament\Resources\ParticipantResource\Pages;
 use App\Models\Participant;
-use App\Models\Race;
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ImportAction;
+use Filament\Tables\Columns\TagsColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class ParticipantResource extends Resource
@@ -24,34 +27,40 @@ class ParticipantResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('fname')
+                TextInput::make('fname')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('lname')
+                TextInput::make('lname')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
+                TextInput::make('phone')
                     ->tel()
                     ->maxLength(15)
                     ->default(null),
 
-                Forms\Components\DatePicker::make('dob')
+                DatePicker::make('dob')
                     ->required()
-                    ->live(), // important for live updates
+                    ->live(),
 
-                Forms\Components\TextInput::make('gender'),
-
-                Forms\Components\Select::make('race_id')
-                    ->relationship(name: 'race', titleAttribute: 'distance')
+                Select::make('gender')
+                    ->options([
+                        'male' => 'Male',
+                        'female' => 'Female',
+                        'other' => 'Other',
+                    ])
+                    ->required()
+                    ->native(false),
+                Select::make('race_id')
+                    ->relationship(name: 'race', titleAttribute: 'name')
                     ->searchable()
                     ->live()
                     ->required(),
 
-                Forms\Components\Select::make('age_group_id')
+                Select::make('age_group_id')
                     ->label('Age Group')
                     ->options(function (Get $get) {
                         $raceId = $get('race_id');
@@ -69,7 +78,7 @@ class ParticipantResource extends Resource
                             ->where('from', '<=', $age)
                             ->where('to', '>=', $age)
                             ->pluck('name', 'id');
-                    })
+                    })->native()
                     ->hidden(fn (Get $get) => ! ($get('race_id') && $get('dob')))
                     ->helperText(function (Get $get) {
                         $raceId = $get('race_id');
@@ -93,87 +102,37 @@ class ParticipantResource extends Resource
             ]);
     }
 
-    /* public static function form(Form $form): Form */
-    /* { */
-    /*    return $form */
-    /*        ->schema([ */
-    /*            Forms\Components\TextInput::make('fname') */
-    /*                ->required() */
-    /*                ->maxLength(255), */
-    /*            Forms\Components\TextInput::make('lname') */
-    /*                ->required() */
-    /*                ->maxLength(255), */
-    /*            Forms\Components\TextInput::make('email') */
-    /*                ->email() */
-    /*                ->required() */
-    /*                ->maxLength(255), */
-    /*            Forms\Components\TextInput::make('phone') */
-    /*                ->tel() */
-    /*                ->maxLength(15) */
-    /*                ->default(null), */
-    /*            Forms\Components\DatePicker::make('dob') */
-    /*                ->required(), */
-    /*            Forms\Components\TextInput::make('gender'), */
-    /*            Forms\Components\Select::make('race_id') */
-    /*                ->relationship(name: 'race', titleAttribute: 'distance') */
-    /*                ->searchable() */
-    /*                ->searchPrompt('Search race by distance') */
-    /*                ->required() */
-    /*                ->live(), // Add live() to update when value changes */
-    /**/
-    /*            Forms\Components\Select::make('age_group_id') */
-    /*                ->label('Age Group') */
-    /*                ->options(function (Get $get) { */
-    /*                    $raceId = $get('race_id'); */
-    /*                    if (! $raceId) { */
-    /*                        return []; */
-    /*                    } */
-    /**/
-    /*                    return AgeGroup::whereHas('races', function ($query) use ($raceId) { */
-    /*                        $query->where('race_id', $raceId); */
-    /*                    })->pluck('name', 'id'); */
-    /*                }) */
-    /*                ->searchable() */
-    /*                ->required() */
-    /*                ->hidden(fn (Get $get) => ! $get('race_id')), */
-    /*        ]); */
-    /* } */
-
     public static function table(Table $table): Table
     {
         return $table->headerActions([
             ImportAction::make()
-                ->importer(ParticipantImporter::class)
-                ->form([
-                    /* Forms\Components\Select::make('race_id') */
-                    /*    ->label('Race') */
-                    /*    ->required(), */
-                ]),
+                ->importer(ParticipantImporter::class),
         ])->
             columns([
-                Tables\Columns\TextColumn::make('fname')
+                TextColumn::make('id')->label('bib/chip_id'),
+                TextColumn::make('fname')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lname')
+                TextColumn::make('lname')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('dob')->label('age')->getStateUsing(fn ($record) => \Carbon\Carbon::parse($record->dob)->age),
-                Tables\Columns\TextColumn::make('gender'),
-                Tables\Columns\TextColumn::make('race.distance')
+                TextColumn::make('dob')->label('age')->getStateUsing(fn ($record) => \Carbon\Carbon::parse($record->dob)->age),
+                TextColumn::make('gender'),
+                TextColumn::make('race.distance')
                     ->label('Race Distance')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TagsColumn::make('ageGroup.name')
+                TagsColumn::make('ageGroup.name')
                     ->label('Age Group')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

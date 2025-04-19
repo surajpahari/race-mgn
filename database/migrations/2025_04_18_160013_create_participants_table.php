@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('fname');
             $table->string('lname');
-            $table->string('email')->unique(); // email() isn't a valid column type
-            $table->string('phone', 15)->nullable(); // no 'number' type; string is better for phone
-            $table->date('dob'); // stick to lowercase for consistency
+            $table->string('email')->unique();
+            $table->string('phone', 15)->nullable();
+            $table->date('dob');
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->foreignId('race_id')->constrained()->onDelete('cascade');
-            $table->foreignId('age_group_id')->constrained()->onDelete('cascade');
-            /* $table->unsignedInteger('bib_number')->nullable(); */
-            /* $table->unsignedInteger('chip_number')->nullable(); */
+
+            // Modified age_group_id to be nullable and set null on delete
+            $table->foreignId('age_group_id')->nullable()->constrained()->onDelete('set null');
 
             $table->timestamps();
         });

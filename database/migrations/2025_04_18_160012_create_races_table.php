@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('races', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->float('distance');
             $table->date('start-date');
             $table->timestamps();

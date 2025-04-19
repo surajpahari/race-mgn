@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RaceResource\Pages;
 use App\Models\Race;
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MultiSelect;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -21,24 +23,26 @@ class RaceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('distance')
+                TextInput::make('name')->required(),
+                TextInput::make('distance')
                     ->required()
-                    ->numeric(),
-                Forms\Components\DatePicker::make('start-date')
+                    ->numeric()->suffix('m'),
+                DatePicker::make('start-date')
                     ->required(),
-                Forms\Components\MultiSelect::make('ageGroups')
+                MultiSelect::make('ageGroups')
                     ->relationship('ageGroups', 'name')
                     ->label('Available Age Groups')
-                    ->preload()->required(),            ]);
+                    ->preload()->required()->native(),            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('distance')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()->suffix('m'),
 
                 TagsColumn::make('ageGroups.name')
                     ->label('Age Groups'),

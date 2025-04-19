@@ -11,6 +11,11 @@ class ParticipantImporter extends Importer
 {
     protected static ?string $model = Participant::class;
 
+    /* public function __construct(array $columnMap = []) */
+    /* { */
+    /*    parent::__construct($columnMap); */
+    /* } */
+
     public static function getColumns(): array
     {
         return [
@@ -38,15 +43,7 @@ class ParticipantImporter extends Importer
         ];
     }
 
-    public function resolveRecord(): ?Participant
-    {
-        // return Participant::firstOrNew([
-        //     // Update existing records, matching them by `$this->data['column_name']`
-        //     'email' => $this->data['email'],
-        // ]);
-
-        return new Participant;
-    }
+    /* public function resolveRecord(): ?Participant {} */
 
     public static function getCompletedNotificationBody(Import $import): string
     {
