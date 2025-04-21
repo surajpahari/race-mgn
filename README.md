@@ -66,7 +66,7 @@ php artisan serve
 
 Your application will be available at `http://localhost:8000`.
 
-## Login using following credentials
+## Login using filament credentials
 
 ![login](./screenshots/login.png)
 
